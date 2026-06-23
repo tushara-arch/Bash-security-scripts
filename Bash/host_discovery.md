@@ -34,7 +34,7 @@ sudo ./host_discovery.sh 192.168.1.0/24
 
 ##  The Development Journey: Lessons Learned
 ### 1. The Danger of Silent Failures
-* **The Mistake:** Initially, I relied on a simple structural Regular Expression to validate the IP, assuming `nmap` would handle mathematically impossible IPs (like `999.999.999.999/24`). To keep the terminal output clean, I piped `nmap` errors to a black hole using `2>/dev/null`.
+* **The Mistake:** Initially, I relied on a simple structural Regular Expression to validate the IP, assuming `nmap` would handle mathematically impossible IPs (like `999.999.999.999/24`). 
 * **The Result:** The script created a dangerous "false negative." If a user typed a bad IP, `nmap` would fail silently, and the script would output `[!] No live hosts found`, misleading the operator into thinking the subnet was empty rather than realizing the scan never ran.
 * **The Fix:** I implemented strict mathematical validation in native Bash *before* the `nmap` command. The script now parses the IP address into individual octets and verifies they do not exceed `255`, ensuring bad data never reaches the scanning engine.
 
