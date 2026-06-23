@@ -33,8 +33,6 @@ sudo ./host_discovery.sh 192.168.1.0/24
 ---
 
 ##  The Development Journey: Lessons Learned
-Building this script was an exercise in understanding edge cases and the importance of sanitizing inputs in security tooling. Here are the key iterations and improvements made during development:
-
 ### 1. The Danger of Silent Failures
 * **The Mistake:** Initially, I relied on a simple structural Regular Expression to validate the IP, assuming `nmap` would handle mathematically impossible IPs (like `999.999.999.999/24`). To keep the terminal output clean, I piped `nmap` errors to a black hole using `2>/dev/null`.
 * **The Result:** The script created a dangerous "false negative." If a user typed a bad IP, `nmap` would fail silently, and the script would output `[!] No live hosts found`, misleading the operator into thinking the subnet was empty rather than realizing the scan never ran.
@@ -50,4 +48,4 @@ Building this script was an exercise in understanding edge cases and the importa
 * **The Fix:** Transitioned to using `printf` with strict width parameters (e.g., `%-5s`) to ensure columns perfectly align regardless of the length of the IP address, alongside a TTY check to ensure logging colors don't corrupt saved text files.
 
 ## What Comes Next
-The list of live hosts produced by this script is the starting point for further enumeration. Because the output is cleanly formatted, it can be piped directly into subsequent tooling — port scanning, service fingerprinting, or fed into the "asset change monitor.sh" to establish a baseline of what is running on each discovered host. 
+The list of live hosts produced by this script is the starting point for further enumeration. Because the output is cleanly formatted, it can be piped directly into subsequent tooling — port scanning, service fingerprinting, or fed into the `asset change monitor.sh` to establish a baseline of what is running on each discovered host. 
