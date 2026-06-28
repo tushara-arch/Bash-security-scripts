@@ -1,29 +1,17 @@
 # Phase 2: Authentication Log Analysis & Automated Remediation
 
 ##  Overview
-This script parses an `auth.log` file to identify the top source IPs responsible for brute-force login attempts, geolocates each IP using the local MaxMind GeoIP database for offline threat enrichment., and optionally applies UFW blocking rules depending on operator privilege. 
+This script parses an `auth.log` file to identify the top source IPs responsible for brute-force login attempts, geolocates each IP using the local MaxMind GeoIP database for offline threat enrichment and optionally applies UFW blocking rules depending on operator privilege. 
 
 Designed for rapid triage during an active incident, this tool extracts attacker origin data and deploys automated firewall remediation in a single, highly optimized pass.
 
 ##  Features
 * **Log Parsing:** Extracts and ranks attacker IPs by attempt count from a provided auth log file.
-* **Offline Geolocation:** Resolves each IP to a country using the local MaxMind `geoiplookup` database, allowing for zero-latency Threat Intelligence gathering without relying on rate-limited external web APIs.
+* **Offline Geolocation:** Resolves each IP to a country using the local MaxMind `geoiplookup` database, allowing for zero-latency Threat Intelligence enriching without relying on rate-limited external web APIs.
 * **Optimized Architecture (Separation of Concerns):** Engineered with strict loop decoupling. Reporting and Threat Intel generation run completely independent of the automated firewall modifications, preventing redundant condition checks and code duplication.
 * **Privilege-Aware Remediation:** Dynamically detects operator privileges (`EUID`). If executed as root, UFW deny rules are applied automatically. If run as a standard user, the script safely generates the audit report and skips remediation without throwing disruptive terminal errors.
 * **Fail-Fast Design & Secure Execution:** Hardened with `set -euo pipefail` and comprehensive pre-flight checks to validate log file paths, read permissions, and system dependencies before any data processing begins.
 * **Persistent Artifacts:** Writes extracted attacker IPs to `Attacker_origin.txt` to provide a persistent artifact for post-incident reporting or SIEM ingestion.
-
-##  Skills Demonstrated
-- Bash Scripting
-- Linux Authentication Log Analysis
-- Regular Expressions (Regex)
-- Text Processing (`grep`, `awk`, `sort`, `uniq`)
-- GeoIP Threat Enrichment
-- Firewall Automation (UFW)
-- Defensive Bash Programming (`set -euo pipefail`)
-- Input Validation & Dependency Checking
-- Privilege-Aware Execution (`EUID`)
-
 
 ##  Usage
 
@@ -77,7 +65,7 @@ else
     done < "$OUTPUT_FILE"
 fi
 ```
-In these above, the BlOCKING_ENABLED variable is decided before by using the EUID.
+In both cases above, the `BLOCKING_ENABLED` variable is decided before by using the EUID.
 * **The Final Architecture (Separation of Concerns):** The logic was decoupled entirely. The script now utilizes two distinct loops with single responsibilities:
   1. A **Reporting Loop** that always runs, handling geolocation and output.
   2. A **Remediation Loop** that only executes if `EUID == 0`, quietly reading from the temp file to apply UFW blocks. No duplication, no redundant evaluations.
@@ -137,3 +125,13 @@ In a production environment, the local firewall automation demonstrated by this 
 
 Similarly, the extracted attacker IPs and GeoIP enrichment data would be forwarded to a SIEM platform for centralized log correlation, alerting, long-term retention, and dashboarding across multiple systems.
 
+##  Skills Demonstrated
+- Bash Scripting
+- Linux Authentication Log Analysis
+- Regular Expressions (Regex)
+- Text Processing (`grep`, `awk`, `sort`, `uniq`)
+- GeoIP Threat Enrichment
+- Firewall Automation (UFW)
+- Defensive Bash Programming (`set -euo pipefail`)
+- Input Validation & Dependency Checking
+- Privilege-Aware Execution (`EUID`)
