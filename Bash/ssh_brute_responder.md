@@ -122,7 +122,9 @@ This approach extracts IPv4 addresses directly using Extended Regular Expression
 While this script effectively demonstrates the core logic of log triage, deploying permanent, automated Bash scripts in a live production environment carries specific architectural risks:
 
 1.  **Threshold-Based Detection vs. Absolute Ranking:** This script triages the absolute "Top 10" offenders for rapid incident response. However, automated enterprise blocking is governed by strict behavioral thresholds (e.g., ≥ 5 failed attempts within a 5-minute window) rather than arbitrary ranking. This prevents false positives, ensuring a legitimate user making a simple typo is not instantly banned.
+
 2.  **Self-Denial of Service (Lack of Whitelisting):** Enterprise deployments typically maintain allowlists for trusted infrastructure such as administrative workstations, VPN gateways, monitoring systems, and internal management networks. Without whitelisting, repeated authentication failures from a legitimate administrator could result in an unintended self-denial of service.
+
 3.  **Firewall Rule Bloat:** The script applies permanent UFW rules that remain until manually removed. In production, attackers frequently rotate source IP addresses, causing firewall rule sets to grow continuously and become difficult to manage. Enterprise intrusion prevention systems address this by applying temporary, automatically expiring bans instead of permanent firewall rules.
 
 ##  Future Improvements
