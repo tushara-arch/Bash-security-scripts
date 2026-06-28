@@ -6,6 +6,7 @@ This script parses an `auth.log` file to identify the top source IPs responsible
 Designed for rapid triage during an active incident, this tool extracts attacker origin data and deploys automated firewall remediation in a single, highly optimized pass.
 
 ##  Features
+* **Log Parsing:** Extracts and ranks attacker IPs by attempt count from a provided auth log file.
 * **Offline Geolocation:** Resolves each IP to a country using the local MaxMind `geoiplookup` database, allowing for zero-latency Threat Intelligence gathering without relying on rate-limited external web APIs.
 * **Optimized Architecture (Separation of Concerns):** Engineered with strict loop decoupling. Reporting and Threat Intel generation run completely independent of the automated firewall modifications, preventing redundant condition checks and code duplication.
 * **Privilege-Aware Remediation:** Dynamically detects operator privileges (`EUID`). If executed as root, UFW deny rules are applied automatically. If run as a standard user, the script safely generates the audit report and skips remediation without throwing disruptive terminal errors.
@@ -20,14 +21,17 @@ Designed for rapid triage during an active incident, this tool extracts attacker
 ##  Usage
 
 **1. Make the script executable:**
+
 `chmod +x phase2.sh`
 
 **2. Run in Audit/Report Mode (Non-Root):**
 Executing without `sudo` will parse the logs and generate the Threat Intelligence report, but will safely bypass the firewall modification loop.
+
 `./phase2.sh /var/log/auth.log`
 
 **3. Run in Remediation Mode (Root):**
 Executing with `sudo` will generate the report and immediately block the extracted malicious IPs across all ports using UFW.
+
 `sudo ./phase2.sh /var/log/auth.log`
 
 ---
@@ -82,4 +86,14 @@ To make this extraction pipeline universally deployable regardless of column spa
 `grep -E "Failed password|authentication failure" "$LOG_FILE" | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | sort | uniq -c | sort -nr | head -n 10`
 
 ---
+
+## 🏢 Enterprise Architecture Limitations & Future Scope
+While this script effectively demonstrates the core logic of log triage, deploying permanent, automated Bash scripts in a live production environment carries specific architectural risks:
+
+1.  **Threshold-Based Detection vs. Absolute Ranking:** This script triages the absolute "Top 10" offenders for rapid incident response. However, automated enterprise blocking is governed by strict behavioral thresholds (e.g., ≥ 5 failed attempts within a 5-minute window) rather than arbitrary ranking. This prevents false positives, ensuring a legitimate user making a simple typo is not instantly banned.
+2.  **Self-Denial of Service (Lack of Whitelisting):** This standalone script lacks subnet whitelisting capabilities. In a production environment, if an internal administrator repeatedly fails authentication, this tool would inadvertently lock the IT team out of their own infrastructure.
+3.  **Firewall Rule Bloat:** Attackers rapidly cycle IP addresses. Permanently adding every offending IP to UFW will eventually degrade kernel networking performance. 
+
+**Future Implementation:** 
+The blocking logic in this script should be migrated to a dedicated Intrusion Prevention System like Fail2Ban, which natively handles threshold-based triggers, ephemeral bans, and subnet whitelisting. The log parsing and geolocation output should be forwarded to a SIEM to build centralized dashboards and enable correlation across multiple log sources — the kind of visibility that a standalone script cannot provide.
 
