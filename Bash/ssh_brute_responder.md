@@ -13,6 +13,17 @@ Designed for rapid triage during an active incident, this tool extracts attacker
 * **Fail-Fast Design & Secure Execution:** Hardened with `set -euo pipefail` and comprehensive pre-flight checks to validate log file paths, read permissions, and system dependencies before any data processing begins.
 * **Persistent Artifacts:** Writes extracted attacker IPs to `Attacker_origin.txt` to provide a persistent artifact for post-incident reporting or SIEM ingestion.
 
+##  Skills Demonstrated
+- Bash Scripting
+- Linux Authentication Log Analysis
+- Regular Expressions (Regex)
+- Text Processing (`grep`, `awk`, `sort`, `uniq`)
+- GeoIP Threat Enrichment
+- Firewall Automation (UFW)
+- Defensive Bash Programming (`set -euo pipefail`)
+- Input Validation & Dependency Checking
+- Privilege-Aware Execution (`EUID`)
+
 ##  Usage
 
 **1. Make the script executable:**
@@ -47,7 +58,8 @@ while read -r count ip; do
             (( ++BLOCKED )) || true
         fi
     done < "$OUTPUT_FILE"
-``` 
+```
+
 * **The First Fix (Code Duplication):** To solve the efficiency issue, the condition was moved outside the loop. However, this created two massive `while` loops—one for root and one for non-root. This resulted in severe code duplication, with the Threat Intel (`geoiplookup`) and formatting (`printf`) logic written twice.
 ```bash
 if [[ "$BLOCKING_ENABLED" == true ]]; then
@@ -125,13 +137,3 @@ In a production environment, the local firewall automation demonstrated by this 
 
 Similarly, the extracted attacker IPs and GeoIP enrichment data would be forwarded to a SIEM platform for centralized log correlation, alerting, long-term retention, and dashboarding across multiple systems.
 
-##  Skills Demonstrated
-- Bash Scripting
-- Linux Authentication Log Analysis
-- Regular Expressions (Regex)
-- Text Processing (`grep`, `awk`, `sort`, `uniq`)
-- GeoIP Threat Enrichment
-- Firewall Automation (UFW)
-- Defensive Bash Programming (`set -euo pipefail`)
-- Input Validation & Dependency Checking
-- Privilege-Aware Execution (`EUID`)
