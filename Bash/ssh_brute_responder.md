@@ -1,7 +1,7 @@
-# Phase 2: Automated Threat Intelligence & Remediation Engine
+# Phase 2: Authentication Log Analysis & Automated Remediation
 
 ##  Overview
-This script parses an `auth.log` file to identify the top source IPs responsible for brute-force login attempts, geolocates each one using local Threat Intelligence, and optionally applies UFW blocking rules depending on operator privilege. 
+This script parses an `auth.log` file to identify the top source IPs responsible for brute-force login attempts, geolocates each IP using the local MaxMind GeoIP database for offline threat enrichment., and optionally applies UFW blocking rules depending on operator privilege. 
 
 Designed for rapid triage during an active incident, this tool extracts attacker origin data and deploys automated firewall remediation in a single, highly optimized pass.
 
@@ -11,12 +11,19 @@ Designed for rapid triage during an active incident, this tool extracts attacker
 * **Optimized Architecture (Separation of Concerns):** Engineered with strict loop decoupling. Reporting and Threat Intel generation run completely independent of the automated firewall modifications, preventing redundant condition checks and code duplication.
 * **Privilege-Aware Remediation:** Dynamically detects operator privileges (`EUID`). If executed as root, UFW deny rules are applied automatically. If run as a standard user, the script safely generates the audit report and skips remediation without throwing disruptive terminal errors.
 * **Fail-Fast Design & Secure Execution:** Hardened with `set -euo pipefail` and comprehensive pre-flight checks to validate log file paths, read permissions, and system dependencies before any data processing begins.
-* **Persistent Artifacts:** Writes extracted IP intelligence to `Attacker_origin.txt` to provide a persistent artifact for post-incident reporting or SIEM ingestion.
+* **Persistent Artifacts:** Writes extracted attacker IPs to `Attacker_origin.txt` to provide a persistent artifact for post-incident reporting or SIEM ingestion.
 
-## ⚙️ Prerequisites & Assumptions
-* **OS:** Ubuntu/Debian-based systems (relies on `apt` and `ufw`).
-* **Dependencies:** `geoip-bin` (Install via `sudo apt install geoip-bin`).
-* **SSH Hardening Assumption:** This script is designed for environments adhering to enterprise SSH hardening standards. Specifically, it assumes `UseDNS no` is configured in `/etc/ssh/sshd_config`. This prevents reverse DNS lookups, ensuring logs record raw attacker IPs rather than spoofed hostnames, optimizing the extraction pipeline.
+##  Skills Demonstrated
+- Bash Scripting
+- Linux Authentication Log Analysis
+- Regular Expressions (Regex)
+- Text Processing (`grep`, `awk`, `sort`, `uniq`)
+- GeoIP Threat Enrichment
+- Firewall Automation (UFW)
+- Defensive Bash Programming (`set -euo pipefail`)
+- Input Validation & Dependency Checking
+- Privilege-Aware Execution (`EUID`)
+
 
 ##  Usage
 
@@ -70,30 +77,61 @@ else
     done < "$OUTPUT_FILE"
 fi
 ```
-In these the blocking enabled or disbaled is decided before by using the EUID.
+In these above, the BlOCKING_ENABLED variable is decided before by using the EUID.
 * **The Final Architecture (Separation of Concerns):** The logic was decoupled entirely. The script now utilizes two distinct loops with single responsibilities:
   1. A **Reporting Loop** that always runs, handling geolocation and output.
   2. A **Remediation Loop** that only executes if `EUID == 0`, quietly reading from the temp file to apply UFW blocks. No duplication, no redundant evaluations.
 
-### 2. Universal Data Extraction (Regex Optimization)
-The initial prototype utilized `awk` to parse standard Linux `auth.log` files:
-`grep "authentication failure" "$1" | awk -F'rhost=' '{print $2}' | awk '{print $1}' | sort | uniq -c | sort -nr | head -n 10`
+### 2. Data Extraction (Parser Portability)
 
-While effective for specific formats, log structures vary wildly between OS distributions (e.g., using `from` instead of `rhost=`). 
+The script extracts attacker IP addresses from Linux authentication logs using the `rhost=` field present in the accompanying sample `auth.log`. This approach is simple, efficient, and accurately targets the log format used during development.
 
-**The Universal Regex Alternative:**
-To make this extraction pipeline universally deployable regardless of column spacing, the final pipeline utilizes Extended Regular Expressions to isolate the IPv4 addresses directly:
-`grep -E "Failed password|authentication failure" "$LOG_FILE" | grep -oE "\b([0-9]{1,3}\.){3}[0-9]{1,3}\b" | sort | uniq -c | sort -nr | head -n 10`
+```bash
+grep "authentication failure" "$LOG_FILE" \
+| awk -F'rhost=' '{print $2}' \
+| awk '{print $1}' \
+| sort \
+| uniq -c \
+| sort -nr \
+| head -n 10
+```
+
+This parser is intentionally tailored to the provided sample log. Authentication log formats vary between Linux distributions, PAM configurations, OpenSSH versions, and system logging daemons, so other environments may record failed authentication attempts differently.
+
+#### Alternative Extraction Pipeline
+
+For environments where failed SSH authentication events follow the common OpenSSH format (`Failed password ... from <IP>`), a more portable extraction pipeline can be used:
+
+```bash
+grep -E "Failed password|authentication failure" "$LOG_FILE" \
+| grep -oE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' \
+| sort \
+| uniq -c \
+| sort -nr \
+| head -n 10
+```
+
+This approach extracts IPv4 addresses directly using Extended Regular Expressions instead of relying on field positions such as `rhost=`. As a result, it is compatible with a wider range of common authentication log formats.
+
+**Note:** In environments where reverse DNS resolution is enabled, some systems may record hostnames instead of IP addresses. Since this pipeline matches IPv4 addresses only, those entries would require a modified extraction pattern or disabling reverse DNS lookups (for example, by configuring `UseDNS no` where applicable).
+
 
 ---
 
-## 🏢 Enterprise Architecture Limitations & Future Scope
+##  Enterprise Architecture Limitations & Future Scope
 While this script effectively demonstrates the core logic of log triage, deploying permanent, automated Bash scripts in a live production environment carries specific architectural risks:
 
 1.  **Threshold-Based Detection vs. Absolute Ranking:** This script triages the absolute "Top 10" offenders for rapid incident response. However, automated enterprise blocking is governed by strict behavioral thresholds (e.g., ≥ 5 failed attempts within a 5-minute window) rather than arbitrary ranking. This prevents false positives, ensuring a legitimate user making a simple typo is not instantly banned.
-2.  **Self-Denial of Service (Lack of Whitelisting):** This standalone script lacks subnet whitelisting capabilities. In a production environment, if an internal administrator repeatedly fails authentication, this tool would inadvertently lock the IT team out of their own infrastructure.
-3.  **Firewall Rule Bloat:** Attackers rapidly cycle IP addresses. Permanently adding every offending IP to UFW will eventually degrade kernel networking performance. 
+2.  **Self-Denial of Service (Lack of Whitelisting):** Enterprise deployments typically maintain allowlists for trusted infrastructure such as administrative workstations, VPN gateways, monitoring systems, and internal management networks. Without whitelisting, repeated authentication failures from a legitimate administrator could result in an unintended self-denial of service.
+3.  **Firewall Rule Bloat:** The script applies permanent UFW rules that remain until manually removed. In production, attackers frequently rotate source IP addresses, causing firewall rule sets to grow continuously and become difficult to manage. Enterprise intrusion prevention systems address this by applying temporary, automatically expiring bans instead of permanent firewall rules.
 
-**Future Implementation:** 
-The blocking logic in this script should be migrated to a dedicated Intrusion Prevention System like Fail2Ban, which natively handles threshold-based triggers, ephemeral bans, and subnet whitelisting. The log parsing and geolocation output should be forwarded to a SIEM to build centralized dashboards and enable correlation across multiple log sources — the kind of visibility that a standalone script cannot provide.
+##  Future Improvements
+In a production environment, the local firewall automation demonstrated by this project would typically be replaced by an intrusion prevention system such as **Fail2Ban**, which natively supports:
+
+* Threshold-based detection
+* Temporary (expiring) bans
+* Trusted host and subnet whitelisting
+* Automatic rule cleanup
+
+Similarly, the extracted attacker IPs and GeoIP enrichment data would be forwarded to a SIEM platform for centralized log correlation, alerting, long-term retention, and dashboarding across multiple systems.
 
