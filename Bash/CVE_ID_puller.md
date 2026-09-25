@@ -43,7 +43,11 @@ Querying NVD API for CVE-2024-3094...
 ```
 
 ## Limitations
-* Unauthenticated requests are capped at NVD's public rate limit (5 requests / 30 seconds). No API key support yet.
-* Looks up one CVE per run — no batch or bulk querying.
-* Depends on NVD's current JSON schema; a structural change on their end would break the `jq` filters until updated.
-* Requires internet access — no local caching or offline fallback.
+* **Weak Input Validation:** Lacks regex verification to ensure the input matches the standard CVE-YYYY-NNNNN format before executing the API call.
+* **Incomplete Error Handling:** Ignores HTTP response codes, failing to distinguish between a missing CVE (404), a rate limit block (403), or a server outage (503).
+* **Schema Dependency:** Depends on NVD's current JSON schema; a structural change on their end would break the `jq` filters until updated.
+
+## Future Improvements
+* **API Key Integration:** Add support for NVD API keys to bypass the strict public rate limit (currently capped at 5 requests / 30 seconds).
+* **Bulk Processing:** Implement a loop to ingest a text file of CVEs and query them sequentially with appropriate throttling.
+
