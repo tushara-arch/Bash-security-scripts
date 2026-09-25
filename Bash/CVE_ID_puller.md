@@ -30,17 +30,8 @@ Pass a CVE identifier as the single argument.
 ```
 
 **Example Output:**
-```text
-Querying NVD API for CVE-2024-3094...
+<img width="1528" height="319" alt="image" src="https://github.com/user-attachments/assets/aff4a156-b25f-41ea-9049-055ea00c5121" />
 
-========================================
- CVE ID:      CVE-2024-3094
- CVSS Score:  10.0 (CRITICAL)
-========================================
- Description:
- Malicious code was discovered in the upstream tarballs of xz, starting with version 5.6.0...
-========================================
-```
 
 ## Limitations
 * **Weak Input Validation:** Lacks regex verification to ensure the input matches the standard CVE-YYYY-NNNNN format before executing the API call.
