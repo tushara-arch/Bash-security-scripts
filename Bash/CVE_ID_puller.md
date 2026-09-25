@@ -11,11 +11,6 @@ Instead of navigating the NVD website manually, this tool uses `curl` to fetch t
 * **Fallback Logic:** Handles inconsistencies in historical vulnerability data by utilizing `jq` fallback operators (`//`) to pivot between available CVSS metrics, seamlessly cascading from CVSS v4.0 down to v2.
 * **In-Memory Processing:** Captures the API response payload in a Bash variable, allowing multiple `jq` parsing passes without re-querying the API and hitting rate limits.
 
-## Prerequisites
-This script relies on standard Unix utilities. Ensure they are installed on your system before running.
-* `curl`
-* `jq`
-
 ## Usage
 
 **1. Make the script executable:**
