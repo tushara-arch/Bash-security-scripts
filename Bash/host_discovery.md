@@ -13,7 +13,7 @@ Building this script was an exercise in understanding edge cases and the importa
 
 ##  Usage
 
-Make the script executable:
+### Make the script executable:
 ```bash
 chmod +x host_discovery.sh
 ```
@@ -24,11 +24,17 @@ Run the script against a target subnet:
 ```bash
 ./host_discovery.sh 192.168.1.0/24
 ```
+**Example Output**
+<img width="1337" height="272" alt="Screenshot 2026-06-24 201640" src="https://github.com/user-attachments/assets/42af71e1-f6b9-4090-8080-9fc42007740d" />
+
 
 ### Recommended execution (Utilizes ARP for local subnets)
 ```bash
 sudo ./host_discovery.sh 192.168.1.0/24
 ```
+**Example Output**
+<img width="967" height="292" alt="Screenshot 2026-06-24 201731" src="https://github.com/user-attachments/assets/8f0eac09-ac9c-40de-b582-8a67fd86d897" />
+
 
 ---
 
