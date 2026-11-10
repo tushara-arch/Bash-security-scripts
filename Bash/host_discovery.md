@@ -23,7 +23,7 @@ Run the script against a target subnet:
 ./host_discovery.sh 192.168.1.0/24
 ```
 **Example Output**
-<img width="1337" height="272" alt="Screenshot 2026-06-24 201640" src="https://github.com/user-attachments/assets/42af71e1-f6b9-4090-8080-9fc42007740d" />
+![Standard host discovery output](/images/Standard_host_discovery.png)
 
 
 ### Recommended execution (Utilizes ARP for local subnets)
@@ -31,7 +31,7 @@ Run the script against a target subnet:
 sudo ./host_discovery.sh 192.168.1.0/24
 ```
 **Example Output**
-<img width="967" height="292" alt="Screenshot 2026-06-24 201731" src="https://github.com/user-attachments/assets/8f0eac09-ac9c-40de-b582-8a67fd86d897" />
+![Recommended execution output](/images/host_discovery_with_sudo.png)
 
 
 ---
