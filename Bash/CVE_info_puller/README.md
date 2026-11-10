@@ -25,7 +25,7 @@ Pass a CVE identifier as the single argument.
 ```
 
 **Example Output:**
-<img width="1528" height="319" alt="image" src="https://github.com/user-attachments/assets/aff4a156-b25f-41ea-9049-055ea00c5121" />
+![CVE_info_puller_output](/images/CVE_info_puller_output.png)
 
 
 ## Limitations
