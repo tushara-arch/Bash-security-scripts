@@ -1,4 +1,3 @@
-  GNU nano 8.7.1                                                                                                                                                                                                                          phase3.sh
 #!/usr/bin/env bash
 
 #Strict error handling
