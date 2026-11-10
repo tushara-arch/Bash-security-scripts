@@ -6,10 +6,10 @@ A simple Bash script that queries the National Vulnerability Database (NVD) API 
 Instead of navigating the NVD website manually, this tool uses `curl` to fetch the data and `jq` to parse the JSON response, outputting only the CVSS score, severity rating, and description.
 
 ## Features
-* **REST API Interaction:** Uses `curl` to execute HTTP GET requests against the NVD API, utilizing silent flags (`-s`) to keep terminal output clean.
-* **JSON Parsing:** Employs `jq` filters, arrays, and object traversal to extract specific data points from the NVD's nested JSON payload.
-* **Fallback Logic:** Handles inconsistencies in historical vulnerability data by utilizing `jq` fallback operators (`//`) to pivot between available CVSS metrics, seamlessly cascading from CVSS v4.0 down to v2.
-* **In-Memory Processing:** Captures the API response payload in a Bash variable, allowing multiple `jq` parsing passes without re-querying the API and hitting rate limits.
+- **REST API Interaction:** Uses `curl` to send HTTP GET requests to the NVD API and retrieve vulnerability information.
+- **JSON Parsing:** Uses `jq` to extract the CVSS score, severity rating, and English description from the JSON response.
+- **CVSS Fallback Logic:** Checks for CVSS v4.0, v3.1, v3.0, and v2.0 metrics in sequence, using the first available score and severity.
+- **Single-Request Processing:** Stores the API response in a Bash variable and uses it for multiple JSON parsing operations without making additional API requests.
 
 ## Usage
 
@@ -34,6 +34,6 @@ Pass a CVE identifier as the single argument.
 * **Schema Dependency:** Depends on NVD's current JSON schema; a structural change on their end would break the `jq` filters until updated.
 
 ## Future Improvements
-* **API Key Integration:** Add support for NVD API keys to bypass the strict public rate limit (currently capped at 5 requests / 30 seconds).
+* **API Key Support:** Add optional NVD API key support to increase the allowed request rate.
 * **Bulk Processing:** Implement a loop to ingest a text file of CVEs and query them sequentially with appropriate throttling.
 
