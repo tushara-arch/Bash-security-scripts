@@ -18,7 +18,7 @@ chmod +x host_discovery.sh
 
 Run the script against a target subnet:
 
-### Standard execution (TCP fallback)
+### Unprivileged Execution (TCP fallback)
 ```bash
 ./host_discovery.sh 192.168.1.0/24
 ```
@@ -26,7 +26,7 @@ Run the script against a target subnet:
 ![Standard host discovery output](/images/Standard_host_discovery.png)
 
 
-### Recommended execution (Utilizes ARP for local subnets)
+### Privileged Execution (ARP discovery on local networks)
 ```bash
 sudo ./host_discovery.sh 192.168.1.0/24
 ```
