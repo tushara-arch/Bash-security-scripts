@@ -29,7 +29,6 @@ Pass a CVE identifier as the single argument.
 
 
 ## Limitations
-* **Weak Input Validation:** Lacks regex verification to ensure the input matches the standard CVE-YYYY-NNNNN format before executing the API call.
 * **Incomplete Error Handling:** Ignores HTTP response codes, failing to distinguish between a missing CVE (404), a rate limit block (403), or a server outage (503).
 * **Schema Dependency:** Depends on NVD's current JSON schema; a structural change on their end would break the `jq` filters until updated.
 
