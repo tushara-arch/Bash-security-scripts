@@ -23,6 +23,10 @@ fi
 # Store the provided CVE ID in a variable
 CVE_ID=$1
 
+if [[ ! "$CVE_ID" =~ ^CVE-[0-9]{4}-[0-9]{4,}$ ]]; then
+    echo "[!] Invalid CVE ID format. Example: CVE-2021-44228"
+    exit 1
+fi
 
 # Define the NVD API v2 endpoint URL
 URL="https://services.nvd.nist.gov/rest/json/cves/2.0?cveId=${CVE_ID}"
