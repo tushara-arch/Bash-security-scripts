@@ -1,4 +1,4 @@
-# Phase 2: Authentication Log Analysis & Automated Remediation
+# Authentication Log Analysis & Automated Remediation
 
 ##  Overview
 This script parses an `auth.log` file to identify the top source IPs responsible for brute-force login attempts, geolocates each IP using the local MaxMind GeoIP database for offline threat enrichment and optionally applies UFW blocking rules depending on operator privilege. 
@@ -13,16 +13,6 @@ Designed for rapid triage during an active incident, this tool extracts attacker
 * **Fail-Fast Design & Secure Execution:** Hardened with `set -euo pipefail` and comprehensive pre-flight checks to validate log file paths, read permissions, and system dependencies before any data processing begins.
 * **Persistent Artifacts:** Writes extracted attacker IPs to `Attacker_origin.txt` to provide a persistent artifact for post-incident reporting or SIEM ingestion.
 
-##  Skills Demonstrated
-- Bash Scripting
-- Linux Authentication Log Analysis
-- Regular Expressions (Regex)
-- Text Processing (`grep`, `awk`, `sort`, `uniq`)
-- GeoIP Threat Enrichment
-- Firewall Automation (UFW)
-- Defensive Bash Programming (`set -euo pipefail`)
-- Input Validation & Dependency Checking
-- Privilege-Aware Execution (`EUID`)
 
 ##  Usage
 
