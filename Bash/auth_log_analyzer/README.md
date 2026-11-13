@@ -13,19 +13,28 @@ This script parses an `auth.log` file to identify the top source IPs responsible
 
 ##  Usage
 
-**1. Make the script executable:**
+### 1. Make the script executable:
 
 `chmod +x auth_log_analyzer.sh`
 
-**2. Run in Audit/Report Mode (Non-Root):**
+### 2. Run in Audit/Report Mode (Non-Root):
 Executing without `sudo` will parse the logs and generate the Threat Intelligence report, but will safely bypass the firewall modification loop.
 
 `./auth_log_analyzer.sh /var/log/auth.log`
 
-**3. Run in Remediation Mode (Root):**
+**Example Output**
+
+![log_analyzer_output_without_sudo](/images/log_analyzer_output_without_sudo.jpg)
+
+### 3. Run in Remediation Mode (Root):
 Executing with `sudo` will generate the report and immediately block the extracted malicious IPs across all ports using UFW.
 
 `sudo ./auth_log_analyzer.sh /var/log/auth.log`
+
+**Example Output**
+
+![log_analyzer_output_with_sudo](/images/log_analyzer_output_with_sudo.jpg)
+
 
 ---
 
