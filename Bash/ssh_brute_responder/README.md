@@ -4,12 +4,11 @@
 This script parses an `auth.log` file to identify the top source IPs responsible for brute-force login attempts, geolocates each IP using the local MaxMind GeoIP database for offline threat enrichment and optionally applies UFW blocking rules depending on operator privilege. 
 
 ##  Features
-* **Log Parsing:** Extracts and ranks attacker IPs by attempt count from a provided auth log file.
-* **Offline Geolocation:** Resolves each IP to a country using the local MaxMind `geoiplookup` database, allowing for zero-latency Threat Intelligence enriching without relying on rate-limited external web APIs.
-* **Optimized Architecture (Separation of Concerns):** Engineered with strict loop decoupling. Reporting and Threat Intel generation run completely independent of the automated firewall modifications, preventing redundant condition checks and code duplication.
-* **Privilege-Aware Remediation:** Dynamically detects operator privileges (`EUID`). If executed as root, UFW deny rules are applied automatically. If run as a standard user, the script safely generates the audit report and skips remediation without throwing disruptive terminal errors.
-* **Fail-Fast Design & Secure Execution:** Hardened with `set -euo pipefail` and comprehensive pre-flight checks to validate log file paths, read permissions, and system dependencies before any data processing begins.
-* **Persistent Artifacts:** Writes extracted attacker IPs to `Attacker_origin.txt` to provide a persistent artifact for post-incident reporting or SIEM ingestion.
+- **Log Parsing:** Extracts source IP addresses from authentication failure entries and ranks them by the number of occurrences.
+- **GeoIP Enrichment:** Uses the local `geoiplookup` database to retrieve country information without relying on external APIs.
+- **Privilege-Aware Remediation:** Checks execution privileges using `$EUID`. Root execution enables UFW rule creation, while non-root execution skips firewall modifications.
+- **Report Generation:** Displays the top 10 source IP addresses, their authentication failure counts, and their corresponding GeoIP information.
+- **Persistent Output:** Saves the extracted IP addresses and attempt counts to `Attacker_origin.txt` for further inspection.
 
 
 ##  Usage
@@ -84,7 +83,7 @@ grep "authentication failure" "$LOG_FILE" \
 | head -n 10
 ```
 
-This parser is intentionally tailored to the provided sample log. Authentication log formats vary between Linux distributions, PAM configurations, OpenSSH versions, and system logging daemons, so other environments may record failed authentication attempts differently.
+This parser is designed for the provided sample log. Other Linux systems may record failed login attempts differently depending on their distribution and configuration.
 
 #### Alternative Extraction Pipeline
 
@@ -123,5 +122,5 @@ In a production environment, the local firewall automation demonstrated by this 
 * Trusted host and subnet whitelisting
 * Automatic rule cleanup
 
-Similarly, the extracted attacker IPs and GeoIP enrichment data would be forwarded to a SIEM platform for centralized log correlation, alerting, long-term retention, and dashboarding across multiple systems.
+
 
