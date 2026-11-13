@@ -1,4 +1,4 @@
-# CVE Info Puller
+# CVE Lookup
 
 ## Overview
 A simple Bash script that queries the National Vulnerability Database (NVD) API v2 to retrieve basic information about a specific vulnerability directly from the command line. 
@@ -15,17 +15,17 @@ Instead of navigating the NVD website manually, this tool uses `curl` to fetch t
 
 **1. Make the script executable:**
 ```bash
-chmod +x cve-puller.sh
+chmod +x cve_lookup.sh
 ```
 
 **2. Run the tool against a specific CVE:**
 Pass a CVE identifier as the single argument.
 ```bash
-./cve-puller.sh CVE-2024-3094
+./cve_lookup.sh CVE-2024-3094
 ```
 
 **Example Output:**
-![CVE_info_puller_output](/images/CVE_info_puller_output.png)
+![CVE_lookup_output](/images/CVE_lookup_output.png)
 
 
 ## Limitations
