@@ -3,8 +3,6 @@
 ##  Overview
 This script parses an `auth.log` file to identify the top source IPs responsible for brute-force login attempts, geolocates each IP using the local MaxMind GeoIP database for offline threat enrichment and optionally applies UFW blocking rules depending on operator privilege. 
 
-Designed for rapid triage during an active incident, this tool extracts attacker origin data and deploys automated firewall remediation in a single, highly optimized pass.
-
 ##  Features
 * **Log Parsing:** Extracts and ranks attacker IPs by attempt count from a provided auth log file.
 * **Offline Geolocation:** Resolves each IP to a country using the local MaxMind `geoiplookup` database, allowing for zero-latency Threat Intelligence enriching without relying on rate-limited external web APIs.
