@@ -1,4 +1,4 @@
-# Authentication Log Analysis & Automated Remediation
+# Authentication Log Analysis
 
 ##  Overview
 This script parses an `auth.log` file to identify the top source IPs responsible for brute-force login attempts, geolocates each IP using the local MaxMind GeoIP database for offline threat enrichment and optionally applies UFW blocking rules depending on operator privilege. 
@@ -15,17 +15,17 @@ This script parses an `auth.log` file to identify the top source IPs responsible
 
 **1. Make the script executable:**
 
-`chmod +x phase2.sh`
+`chmod +x auth_log_analyzer.sh`
 
 **2. Run in Audit/Report Mode (Non-Root):**
 Executing without `sudo` will parse the logs and generate the Threat Intelligence report, but will safely bypass the firewall modification loop.
 
-`./phase2.sh /var/log/auth.log`
+`./auth_log_analyzer.sh /var/log/auth.log`
 
 **3. Run in Remediation Mode (Root):**
 Executing with `sudo` will generate the report and immediately block the extracted malicious IPs across all ports using UFW.
 
-`sudo ./phase2.sh /var/log/auth.log`
+`sudo ./auth_log_analyzer.sh /var/log/auth.log`
 
 ---
 
