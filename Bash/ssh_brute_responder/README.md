@@ -30,12 +30,12 @@ Executing with `sudo` will generate the report and immediately block the extract
 ---
 
 ##  Engineering & Refactoring Journey
-Building this tool required several iterations to optimize performance and adhere to enterprise architecture standards. Below are the key design evolutions.
+Developing this script involved several iterations to improve execution flow, reduce code duplication, and separate reporting from firewall remediation.
 
 ### 1. Refactoring the Remediation Loop
 The most significant architectural shift occurred in how the script handles automated blocking based on user privileges (`EUID`).
 
-* **The Initial Mistake (Inefficient Evaluation):** Initially, the privilege check (`if [[ "$EUID" -eq 0 ]]`) was placed *inside* the main extraction loop. This meant the script was redundantly evaluating a static flag on every single iteration (for every IP address), creating unnecessary computational overhead.
+* **The Initial Mistake (Inefficient Evaluation):** Initially, the privilege check (`if [[ "$EUID" -eq 0 ]]`) was placed *inside* the main extraction loop. This meant the script was redundantly evaluating a static flag on every single iteration (for every IP address. Also the privilege check was placed inside the reporting loop. This mixed passive tasks (GeoIP lookups and displaying results) with active operations (firewall modification), making the execution flow less clear.
 ```bash
 while read -r count ip; do
         country=$(geoiplookup "$ip" 2>/dev/null | awk -F': ' '{print $2}' || echo "Unknown")
