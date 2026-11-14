@@ -25,7 +25,7 @@ Pass a CVE identifier as the single argument.
 ```
 
 **Example Output:**
-![CVE_lookup_output](/images/CVE_lookup_output.png)
+![cve_lookup_output](/images/cve_lookup_output.jpg)
 
 
 ## Limitations
