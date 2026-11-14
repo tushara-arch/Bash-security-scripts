@@ -24,7 +24,7 @@ Executing without `sudo` will parse the logs and generate the Threat Intelligenc
 
 **Example Output**
 
-![log_analyzer_output_without_sudo](/images/log_analyzer_output_without_sudo.jpg)
+![auth_log_analyzer_output_without_sudo](/images/auth_log_analyzer_output_without_sudo.jpg)
 
 ### 3. Run in Remediation Mode (Root):
 Executing with `sudo` will generate the report and immediately block the extracted malicious IPs across all ports using UFW.
@@ -33,7 +33,7 @@ Executing with `sudo` will generate the report and immediately block the extract
 
 **Example Output**
 
-![log_analyzer_output_with_sudo](/images/log_analyzer_output_with_sudo.jpg)
+![auth_log_analyzer_output_with_sudo](/images/auth_log_analyzer_output_with_sudo.jpg)
 
 
 ---
